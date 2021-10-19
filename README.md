@@ -1,2 +1,2 @@
-# nn_exercises
+# NN Exercises
 Neuronal Networks: Exercises to the lecture
