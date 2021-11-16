@@ -16,19 +16,13 @@ public class Driver {
     };
 
     public static void main(String[] args) {
-        NeuralNetwork nn = new NeuralNetwork(2, 10, 1, 0.01, ActivationFunctions.RELU);
+        NeuralNetwork nn = new NeuralNetwork(2, 10, 1, 0.01, ActivationFunctions.SIGMOID);
 
         List<Double> output;
-        nn.fit(X, Y, 1);
+        nn.fit(X, Y, 1000000);
         for (double[] d : X) {
             output = nn.predict(d);
             System.out.println(output.toString());
         }
-
-        nn.weights_ih.print();
-        nn.bias_h.print();
-
-        nn.weights_ho.print();
-        nn.bias_o.print();
     }
 }
