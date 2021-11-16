@@ -14,11 +14,11 @@ public class NeuralNetwork {
     Random random = new Random();
 
     public NeuralNetwork(int i, int h, int o, double l_rate, ActivationFunction activationFunction) {
-        weights_ih = new Matrix(h, i, false);
-        weights_ho = new Matrix(o, h, false);
+        weights_ih = new Matrix(h, i, true);
+        weights_ho = new Matrix(o, h, true);
 
-        bias_h = new Matrix(h, 1, false);
-        bias_o = new Matrix(o, 1, false);
+        bias_h = new Matrix(h, 1, true);
+        bias_o = new Matrix(o, 1, true);
 
         this.l_rate = l_rate;
         this.activationFunction = activationFunction;
@@ -40,47 +40,12 @@ public class NeuralNetwork {
     public void fit(double[][] X, double[][] Y, int epochs) {
         for (int i = 0; i < epochs; i++) {
             int sampleN = (int) (Math.random() * X.length);
-            this.train(X[sampleN], Y[sampleN], false);
+            train(X[sampleN], Y[sampleN]);
         }
     }
 
-    public void fit(double[][] X, double[][] Y, int epochs, int verbose) {
-        switch (verbose) {
-
-            case 0: {
-                System.out.println("Staring training with " + epochs + " epochs");
-                long start = System.currentTimeMillis();
-                for (int i = 0; i < epochs; i++) {
-                    int sampleN = random.nextInt(X.length);
-                    this.train(X[sampleN], Y[sampleN], i + 1 == epochs);
-                }
-                long end = System.currentTimeMillis();
-                long elapsedTime = end - start;
-                System.out.println("Training took : " + (elapsedTime / 1000) + "s");
-
-                break;
-            }
-
-            case 1: {
-                System.out.println("Staring training with " + epochs + " epochs");
-                long start = System.currentTimeMillis();
-                for (int i = 0; i < epochs; i++) {
-                    System.out.println("Epoch: " + (i + 1));
-                    int sampleN = random.nextInt(X.length);
-                    this.train(X[sampleN], Y[sampleN], true);
-                }
-                long end = System.currentTimeMillis();
-                long elapsedTime = end - start;
-                System.out.println("Training took : " + (elapsedTime / 1000) + "s");
-
-                break;
-            }
-        }
-
-    }
-
-    public void train(double[] X, double[] Y, boolean showLoss) {
-        Matrix input = Matrix.fromArray(X);
+    public void train(double[] X, double[] Y) {
+        Matrix input = Matrix.fromArray(X); // 2x1
         Matrix hidden = Matrix.dot(weights_ih, input);
         hidden.add(bias_h);
         hidden.apply(activationFunction, false);
@@ -97,9 +62,6 @@ public class NeuralNetwork {
                 .apply(activationFunction, true)
                 .multiply(error)
                 .multiply(l_rate);
-
-        if (showLoss)
-            printLoss(error);
 
         Matrix hidden_T = Matrix.transpose(hidden);
         Matrix who_delta = Matrix.dot(gradient, hidden_T);
@@ -122,18 +84,5 @@ public class NeuralNetwork {
         bias_h.add(h_gradient);
 
     }
-
-    private void printLoss(Matrix error) {
-        double avg = 0.0;
-
-        for (int i = 0; i < error.rows; i++) {
-            for (int j = 0; j < error.cols; j++) {
-                avg += error.data[i][j];
-            }
-        }
-
-        System.out.print("Average Error: " + avg + "\n");
-    }
-
 }
 
