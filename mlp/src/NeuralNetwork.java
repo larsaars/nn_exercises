@@ -26,13 +26,13 @@ public class NeuralNetwork {
 
     public List<Double> predict(double[] X) {
         Matrix input = Matrix.fromArray(X);
-        Matrix hidden = Matrix.dot(weights_ih, input);
-        hidden.add(bias_h);
-        hidden.apply(activationFunction, false);
+        Matrix hidden = Matrix.dot(weights_ih, input)
+                .add(bias_h)
+                .apply(activationFunction, false);
 
-        Matrix output = Matrix.dot(weights_ho, hidden);
-        output.add(bias_o);
-        output.apply(activationFunction, false);
+        Matrix output = Matrix.dot(weights_ho, hidden)
+                .add(bias_o)
+                .apply(activationFunction, false);
 
         return output.toArray();
     }
@@ -46,13 +46,13 @@ public class NeuralNetwork {
 
     public void train(double[] X, double[] Y) {
         Matrix input = Matrix.fromArray(X); // 2x1
-        Matrix hidden = Matrix.dot(weights_ih, input);
-        hidden.add(bias_h);
-        hidden.apply(activationFunction, false);
+        Matrix hidden = Matrix.dot(weights_ih, input)
+                .add(bias_h)
+                .apply(activationFunction, false);
 
-        Matrix output = Matrix.dot(weights_ho, hidden);
-        output.add(bias_o);
-        output.apply(activationFunction, false);
+        Matrix output = Matrix.dot(weights_ho, hidden)
+                .add(bias_o)
+                .apply(activationFunction, false);
 
         Matrix target = Matrix.fromArray(Y);
 
