@@ -16,10 +16,10 @@ public class Driver {
     };
 
     public static void main(String[] args) {
-        NeuralNetwork nn = new NeuralNetwork(2, 10, 1, 0.01, ActivationFunctions.SIGMOID);
+        NeuralNetwork nn = new NeuralNetwork(2, 10, 1, 0.01, ActivationFunctions.RELU);
 
         List<Double> output;
-        nn.fit(X, Y, 500000, 1);
+        nn.fit(X, Y, 500, 1);
         for (double[] d : X) {
             output = nn.predict(d);
             System.out.println(output.toString());

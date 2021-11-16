@@ -13,7 +13,7 @@ public class Matrix {
         this.cols = cols;
         data = new double[rows][cols];
 
-        if(!zero) {
+        if (!zero) {
             // assign random values between -1 and 1 to matrix
             for (int i = 0; i < rows; i++)
                 for (int j = 0; j < cols; j++)
@@ -67,6 +67,18 @@ public class Matrix {
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < cols; j++)
                 data[i][j] *= scalar;
+
+        return this;
+    }
+
+    public Matrix squared() {
+        return multiply(this);
+    }
+
+    public Matrix abs() {
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                data[i][j] = Math.abs(data[i][j]);
 
         return this;
     }

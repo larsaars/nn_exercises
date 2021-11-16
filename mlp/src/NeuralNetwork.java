@@ -91,7 +91,8 @@ public class NeuralNetwork {
 
         Matrix target = Matrix.fromArray(Y);
 
-        Matrix error = Matrix.c(target).subtract(output);
+        Matrix error = Matrix.c(target)
+                .subtract(output);
         Matrix gradient = Matrix.c(output)
                 .apply(activationFunction, true)
                 .multiply(error)
