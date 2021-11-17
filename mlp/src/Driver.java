@@ -1,4 +1,3 @@
-import activationfunction.ActivationFunction;
 import activationfunction.ActivationFunctions;
 
 import java.util.List;
@@ -12,14 +11,14 @@ public class Driver {
             {1, 1}
     };
     static double[][] Y = {
-            {0}, {1}, {1}, {0}
+            {Matrix.NEAR_ZERO}, {1}, {1}, {Matrix.NEAR_ZERO}
     };
 
     public static void main(String[] args) {
-        NeuralNetwork nn = new NeuralNetwork(2, 10, 2, 0.01, ActivationFunctions.RELU);
+        NeuralNetwork nn = new NeuralNetwork(new int[]{2, 10, 1}, 0.01, ActivationFunctions.RELU);
 
         List<Double> output;
-        nn.fit(X, Y, 50000);
+        nn.fit(X, Y, 500000);
         for (double[] d : X) {
             output = nn.predict(d);
             System.out.println(output.toString());

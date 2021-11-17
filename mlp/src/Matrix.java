@@ -1,11 +1,10 @@
 import activationfunction.ActivationFunction;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Matrix {
+    public static final double NEAR_ZERO = 1e-9, ABSURDLY_LARGE = 1e9;
+
     double[][] data;
     int rows, cols;
 
@@ -33,33 +32,33 @@ public class Matrix {
     public Matrix add(double scalar) {
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < cols; j++)
-                data[i][j] += scalar;
+                data[i][j] = validAddition(data[i][j], scalar);
+                // data[i][j] += scalar;
 
         return this;
     }
 
     public Matrix add(Matrix m) {
-        if (cols != m.cols || rows != m.rows) {
-            System.out.printf("shape mismatch: %s and %s\n", shapeString(), m.shapeString());
-            return null;
-        }
+        if (cols != m.cols || rows != m.rows)
+            throw new ShapeMismatchException("add shape mismatch: %s and %s\n", shapeString(), m.shapeString());
+
 
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < cols; j++)
-                data[i][j] += m.data[i][j];
+                data[i][j] = validAddition(data[i][j], m.data[i][j]);
+                // data[i][j] += m.data[i][j];
 
         return this;
     }
 
     public Matrix subtract(Matrix m) {
-        if (cols != m.cols || rows != m.rows) {
-            System.out.printf("shape mismatch: %s and %s\n", shapeString(), m.shapeString());
-            return null;
-        }
+        if (cols != m.cols || rows != m.rows)
+            throw new ShapeMismatchException("subtract shape mismatch: %s and %s\n", shapeString(), m.shapeString());
 
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < cols; j++)
-                data[i][j] -= m.data[i][j];
+                // data[i][j] -= m.data[i][j];
+                data[i][j] = validAddition(data[i][j], -m.data[i][j]);
 
         return this;
     }
@@ -69,7 +68,7 @@ public class Matrix {
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < cols; j++)
                 // data[i][j] *= scalar;
-                data[i][j] = notNanMultiply(data[i][j], scalar);
+                data[i][j] = validMultiply(data[i][j], scalar);
 
         return this;
     }
@@ -88,15 +87,14 @@ public class Matrix {
 
     // elementwise multiplication
     public Matrix multiply(Matrix m) {
-        if (cols != m.cols || rows != m.rows) {
-            System.out.printf("shape mismatch: %s and %s\n", shapeString(), m.shapeString());
-            return null;
-        }
+        if (cols != m.cols || rows != m.rows)
+            throw new ShapeMismatchException("multiply shape mismatch: %s and %s\n", shapeString(), m.shapeString());
+
 
         for (int i = 0; i < m.rows; i++)
             for (int j = 0; j < m.cols; j++)
                 //data[i][j] *= m.data[i][j];
-                data[i][j] = notNanMultiply(data[i][j], m.data[i][j]);
+                data[i][j] = validMultiply(data[i][j], m.data[i][j]);
 
         return this;
     }
@@ -132,16 +130,16 @@ public class Matrix {
     }
 
     public static Matrix dot(Matrix a, Matrix b) {
-        if (a.cols != b.rows) {
-            System.out.printf("shape mismatch: %s and %s\n", a.shapeString(), b.shapeString());
-            return null;
-        }
+        if (a.cols != b.rows)
+            throw new ShapeMismatchException("dot shape mismatch: %s and %s\n", a.shapeString(), b.shapeString());
+
 
         Matrix temp = new Matrix(a.rows, b.cols);
         for (int i = 0; i < temp.rows; i++)
             for (int j = 0; j < temp.cols; j++)
                 for (int k = 0; k < a.cols; k++)
-                    temp.data[i][j] += notNanMultiply(a.data[i][k], b.data[k][j]);
+                    // temp.data[i][j] += validMultiply(a.data[i][k], b.data[k][j]);
+                    temp.data[i][j] = validAddition(temp.data[i][j], validMultiply(a.data[i][k], b.data[k][j]));
 
         return temp;
     }
@@ -162,10 +160,26 @@ public class Matrix {
                 data[i][j] = Math.random() * 2. - 1.;
     }
 
-    private static double notNanMultiply(double a, double b) {
-        double product = a * b;
-        // product != product means it is NaN
-        return product != product ? a : product;
+    /*
+     * this is needed to be sure that the result of all mathematical operations is a valid double
+     */
+    private static double validMultiply(double a, double b) {
+        return verifyDouble(a * b);
+    }
+
+    private static double validAddition(double a, double b) {
+        return verifyDouble(a + b);
+    }
+
+    private static double verifyDouble(double o) {
+        if(Double.isNaN(o))
+            return NEAR_ZERO;
+        else if(o == Double.POSITIVE_INFINITY)
+            return ABSURDLY_LARGE;
+        else if(o == Double.NEGATIVE_INFINITY)
+            return -ABSURDLY_LARGE;
+        else
+            return o;
     }
 
     /*
