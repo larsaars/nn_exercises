@@ -14,12 +14,7 @@ public class Matrix {
         this.cols = cols;
         data = new double[rows][cols];
 
-        if (random) {
-            // assign random values between -1 and 1 to matrix
-            for (int i = 0; i < rows; i++)
-                for (int j = 0; j < cols; j++)
-                    data[i][j] = Math.random() * 2 - 1;
-        }
+        if (random) randomize();
     }
 
     public Matrix(int rows, int cols) {
@@ -45,7 +40,7 @@ public class Matrix {
 
     public Matrix add(Matrix m) {
         if (cols != m.cols || rows != m.rows) {
-            System.out.println("shape mismatch");
+            System.out.printf("shape mismatch: %s and %s\n", shapeString(), m.shapeString());
             return null;
         }
 
@@ -58,7 +53,7 @@ public class Matrix {
 
     public Matrix subtract(Matrix m) {
         if (cols != m.cols || rows != m.rows) {
-            System.out.println("shape mismatch");
+            System.out.printf("shape mismatch: %s and %s\n", shapeString(), m.shapeString());
             return null;
         }
 
@@ -73,7 +68,8 @@ public class Matrix {
     public Matrix multiply(double scalar) {
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < cols; j++)
-                data[i][j] *= scalar;
+                // data[i][j] *= scalar;
+                data[i][j] = notNanMultiply(data[i][j], scalar);
 
         return this;
     }
@@ -93,15 +89,14 @@ public class Matrix {
     // elementwise multiplication
     public Matrix multiply(Matrix m) {
         if (cols != m.cols || rows != m.rows) {
-            System.out.println("shape mismatch");
+            System.out.printf("shape mismatch: %s and %s\n", shapeString(), m.shapeString());
             return null;
         }
 
-        for (int i = 0; i < m.rows; i++) {
-            for (int j = 0; j < m.cols; j++) {
-                data[i][j] *= m.data[i][j];
-            }
-        }
+        for (int i = 0; i < m.rows; i++)
+            for (int j = 0; j < m.cols; j++)
+                //data[i][j] *= m.data[i][j];
+                data[i][j] = notNanMultiply(data[i][j], m.data[i][j]);
 
         return this;
     }
@@ -138,7 +133,7 @@ public class Matrix {
 
     public static Matrix dot(Matrix a, Matrix b) {
         if (a.cols != b.rows) {
-            System.out.println("shape mismatch");
+            System.out.printf("shape mismatch: %s and %s\n", a.shapeString(), b.shapeString());
             return null;
         }
 
@@ -146,7 +141,7 @@ public class Matrix {
         for (int i = 0; i < temp.rows; i++)
             for (int j = 0; j < temp.cols; j++)
                 for (int k = 0; k < a.cols; k++)
-                    temp.data[i][j] += a.data[i][k] * b.data[k][j];
+                    temp.data[i][j] += notNanMultiply(a.data[i][k], b.data[k][j]);
 
         return temp;
     }
@@ -155,8 +150,22 @@ public class Matrix {
         return new int[]{rows, cols};
     }
 
-    public void printShape() {
-        System.out.println(Arrays.toString(shape()));
+    public String shapeString() {
+        return Arrays.toString(shape());
+    }
+
+
+    // assign random values between -1 and 1 to matrix
+    public void randomize() {
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                data[i][j] = Math.random() * 2. - 1.;
+    }
+
+    private static double notNanMultiply(double a, double b) {
+        double product = a * b;
+        // product != product means it is NaN
+        return product != product ? a : product;
     }
 
     /*
@@ -182,8 +191,8 @@ public class Matrix {
     }
 
     /*
-    * helpful utility functions
-    */
+     * helpful utility functions
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

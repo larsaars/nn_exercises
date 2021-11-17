@@ -14,6 +14,6 @@ public class HyperbolicTangent implements ActivationFunction {
     public double derive(double input) {
         double tanh = activate(input);
 
-        return 1 - tanh * tanh;
+        return 1 - Math.pow(tanh, 2);
     }
 }

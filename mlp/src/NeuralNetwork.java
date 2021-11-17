@@ -8,7 +8,7 @@ import java.util.Random;
 public class NeuralNetwork {
 
     Matrix weights_ih, weights_ho, bias_h, bias_o;
-    double l_rate = 0.01;
+    double l_rate;
     ActivationFunction activationFunction;
 
     Random random = new Random();
@@ -38,8 +38,9 @@ public class NeuralNetwork {
     }
 
     public void fit(double[][] X, double[][] Y, int epochs) {
+        // train in n epochs with stochastic gradient descent
         for (int i = 0; i < epochs; i++) {
-            int sampleN = (int) (Math.random() * X.length);
+            int sampleN = random.nextInt(X.length);
             train(X[sampleN], Y[sampleN]);
         }
     }
