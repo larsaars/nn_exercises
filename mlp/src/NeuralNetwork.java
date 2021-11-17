@@ -12,7 +12,7 @@ public class NeuralNetwork {
 
     public double learningRate;
 
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public NeuralNetwork(int[] layers, double learningRate, ActivationFunction activationFunction) {
         this.learningRate = learningRate;
@@ -23,7 +23,7 @@ public class NeuralNetwork {
         biases = new Matrix[layersSize - 1];
         activationFunctions = new ActivationFunction[layersSize - 1];
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < layersSize - 1; i++) {
             activationFunctions[i] = activationFunction;
             weights[i] = new Matrix(layers[i + 1], layers[i], true);
             biases[i] = new Matrix(layers[i + 1], 1, true);
@@ -50,57 +50,36 @@ public class NeuralNetwork {
     }
 
     public void backprop(double[] X, double[] Y) {
-        Matrix input = Matrix.fromArray(X);
-        Matrix hidden = Matrix.dot(weights[0], input)
-                .add(biases[0])
-                .apply(activationFunctions[0], false);
+        Matrix[] processing = new Matrix[layers.length];
+        processing[0] = Matrix.fromArray(X);
 
-        Matrix output = Matrix.dot(weights[1], hidden)
-                .add(biases[1])
-                .apply(activationFunctions[0], false);
+        for(int i = 0; i < processing.length - 1; i++)
+            processing[i + 1] = Matrix.dot(weights[i], processing[i])
+                    .add(biases[i])
+                    .apply(activationFunctions[i], false);
 
-        Matrix error = Matrix.fromArray(Y).subtract(output);
+        Matrix inputWeightsBefore = Matrix.fromArray(X);
+        Matrix errorBefore = Matrix.fromArray(Y)
+                .subtract(processing[processing.length - 1]);
 
-        Matrix gradient = Matrix.c(output)
-                .apply(activationFunctions[0], true)
-                .multiply(error)
-                .multiply(learningRate);
+        for (int i = layers.length - 2; i >= 0; i--) {
+            Matrix error = i == layers.length - 2 ? errorBefore : Matrix.dot(inputWeightsBefore, errorBefore);
 
-        Matrix hidden_T = Matrix.transpose(hidden);
-        Matrix who_delta = Matrix.dot(gradient, hidden_T); // 1x10
-
-        weights[1].add(who_delta);
-        biases[1].add(gradient);
-
-
-        Matrix who_T = Matrix.transpose(weights[1]); // 10x1
-        Matrix hidden_error = Matrix.dot(who_T, error); // 10x1
-
-        Matrix h_gradient = Matrix.c(hidden) // 10x1
-                .apply(activationFunctions[0], true)
-                .multiply(hidden_error)
-                .multiply(learningRate);
-
-        Matrix i_T = Matrix.transpose(input); // 1x2
-        Matrix wih_delta = Matrix.dot(h_gradient, i_T); // 10x2
-
-        weights[0].add(wih_delta);
-        biases[0].add(h_gradient);
-
-        for(int i = layers.length - 1; i >= 0; i--) {
-            Matrix who_T1 = Matrix.transpose(weights[1]);
-            Matrix hidden_error = Matrix.dot(who_T, error);
-
-            Matrix gradient = Matrix.c(hidden)
-                    .apply(activationFunctions[0], true)
-                    .multiply(hidden_error)
+            Matrix gradient = Matrix.c(processing[i + 1])
+                    .apply(activationFunctions[i], true)
+                    .multiply(error)
                     .multiply(learningRate);
 
-            Matrix i_T = Matrix.transpose(input);
-            Matrix wih_delta = Matrix.dot(h_gradient, i_T);
+            Matrix l_T = Matrix.transpose(processing[i]);
+            Matrix l_delta = Matrix.dot(gradient, l_T);
 
-            weights[i].add(wih_delta);
-            biases[i].add(h_gradient);
+            weights[i].add(l_delta);
+            biases[i].add(gradient);
+
+            if (i != 0) {
+                inputWeightsBefore = Matrix.transpose(weights[i]);
+                errorBefore = error;
+            }
         }
     }
 }
