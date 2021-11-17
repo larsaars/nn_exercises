@@ -15,7 +15,7 @@ public class Driver {
     };
 
     public static void main(String[] args) {
-        NeuralNetwork nn = new NeuralNetwork(new int[]{2, 10, 10, 1}, 0.01, ActivationFunctions.RELU);
+        NeuralNetwork nn = new NeuralNetwork(new int[]{2, 10, 10, 10, 1}, 0.01, ActivationFunctions.RELU);
 
         List<Double> output;
         nn.fit(X, Y, 500000);
