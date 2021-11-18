@@ -1,7 +1,5 @@
 package activationfunction;
 
-import activationfunction.ActivationFunction;
-
 public class ReLU implements ActivationFunction {
     @Override
     public double activate(double input) {

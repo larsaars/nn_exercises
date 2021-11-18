@@ -1,10 +1,11 @@
 import activationfunction.ActivationFunction;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Random;
 
 
-public class NeuralNetwork {
+public class NeuralNetwork implements Serializable {
 
     public Matrix[] weights, biases;
     public ActivationFunction[] activationFunctions;
@@ -41,15 +42,25 @@ public class NeuralNetwork {
         return input.toArray();
     }
 
-    public void fit(double[][] X, double[][] Y, int epochs) {
-        // train in n epochs with stochastic gradient descent
+    /*
+    * train in n epochs with stochastic gradient descent
+    * returns the loss in a double array
+    */
+    public double[] fit(double[][] X, double[][] Y, int epochs) {
+        double[] loss = new double[epochs];
         for (int i = 0; i < epochs; i++) {
             int sampleN = random.nextInt(X.length);
-            backprop(X[sampleN], Y[sampleN]);
+            loss[i] = backprop(X[sampleN], Y[sampleN]);
         }
+
+        return loss;
     }
 
-    public void backprop(double[] X, double[] Y) {
+    /*
+     * backpropagation
+     * returns the loss
+     */
+    private double backprop(double[] X, double[] Y) {
         Matrix[] processing = new Matrix[layers.length];
         processing[0] = Matrix.fromArray(X);
 
@@ -59,8 +70,10 @@ public class NeuralNetwork {
                     .apply(activationFunctions[i], false);
 
         Matrix inputWeightsBefore = Matrix.fromArray(X);
+        // expected minus wished output
         Matrix errorBefore = Matrix.fromArray(Y)
                 .subtract(processing[processing.length - 1]);
+        double loss = errorBefore.l2norm();
 
         for (int i = layers.length - 2; i >= 0; i--) {
             Matrix error = i == layers.length - 2 ? errorBefore : Matrix.dot(inputWeightsBefore, errorBefore);
@@ -81,6 +94,8 @@ public class NeuralNetwork {
                 errorBefore = error;
             }
         }
+
+        return loss;
     }
 }
 

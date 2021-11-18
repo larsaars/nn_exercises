@@ -1,12 +1,13 @@
 import activationfunction.ActivationFunction;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Matrix {
-    public static final double NEAR_ZERO = 1e-9, ABSURDLY_LARGE = 1e9;
+public class Matrix implements Serializable {
+    public static final double NEAR_ZERO = 0, ABSURDLY_LARGE = 1e9;
 
-    double[][] data;
-    int rows, cols;
+    public double[][] data;
+    public int rows, cols;
 
     public Matrix(int rows, int cols, boolean random) {
         this.rows = rows;
@@ -108,6 +109,15 @@ public class Matrix {
         return this;
     }
 
+    public double l2norm() {
+        double sum = 0;
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                sum += data[i][j] * data[i][j];
+
+        return Math.sqrt(sum);
+    }
+
     /*
      * copy a matrix
      */
@@ -173,7 +183,7 @@ public class Matrix {
 
     private static double verifyDouble(double o) {
         if(Double.isNaN(o))
-            return NEAR_ZERO;
+            return 0.;
         else if(o == Double.POSITIVE_INFINITY)
             return ABSURDLY_LARGE;
         else if(o == Double.NEGATIVE_INFINITY)
