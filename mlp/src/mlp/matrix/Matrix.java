@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Matrix implements Serializable {
-    public static final double NEAR_ZERO = 0, ABSURDLY_LARGE = 1e9;
+    public static final double ABSURDLY_LARGE = 1e9;
 
     public double[][] data;
     public int rows, cols;
@@ -205,15 +205,8 @@ public class Matrix implements Serializable {
 
     }
 
-    public List<Double> toArray() {
-        List<Double> temp = new ArrayList<>();
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                temp.add(data[i][j]);
-            }
-        }
-        return temp;
+    public double[] toArray() {
+        return ArrayUtils.flatten(data);
     }
 
     /*

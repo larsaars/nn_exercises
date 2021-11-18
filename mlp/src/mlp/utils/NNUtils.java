@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 public class NNUtils {
     private static final String DEFAULT_LOSS_FILE_NAME = "loss.txt",
-            DEFAULT_NN_FILE_NAME = "nn.txt";
+            DEFAULT_NN_FILE_NAME = "nn.ser";
 
     public static void save(NeuralNetwork nn, double[] loss) {
         Serializer.serialize(nn, DEFAULT_NN_FILE_NAME);
@@ -17,7 +17,7 @@ public class NNUtils {
     }
     
     public static NeuralNetwork load() {
-        return (NeuralNetwork) Serializer.deserialize(DEFAULT_NN_FILE_NAME);
+        return NeuralNetwork.load(DEFAULT_NN_FILE_NAME);
     }
     
     public static void writeLossToFile(double[] loss, String fileName) {

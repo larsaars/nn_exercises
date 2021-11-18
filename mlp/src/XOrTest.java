@@ -2,7 +2,7 @@ import mlp.utils.NNUtils;
 import mlp.NeuralNetwork;
 import mlp.activationfunction.ActivationFunctions;
 
-import java.util.List;
+import java.util.Arrays;
 
 public class XOrTest {
 
@@ -17,13 +17,12 @@ public class XOrTest {
     };
 
     public static void main(String[] args) {
-        NeuralNetwork nn = new NeuralNetwork(new int[]{2, 255, 1}, 0.01, ActivationFunctions.RELU);
+        NeuralNetwork nn = new NeuralNetwork(new int[]{2, 16, 16, 1}, 0.01, ActivationFunctions.RELU);
 
-        List<Double> output;
-        double[] loss = nn.fit(X, Y, 0.01, 20);
+        double[] loss = nn.fit(X, Y, 0.01, 20, 1000000);
         for (double[] d : X) {
-            output = nn.predict(d);
-            System.out.println(output.toString());
+            double[] output = nn.predict(d);
+            System.out.println(Arrays.toString(output));
         }
 
         NNUtils.save(nn, loss);

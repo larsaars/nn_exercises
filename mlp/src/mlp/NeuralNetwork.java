@@ -2,6 +2,7 @@ package mlp;
 
 import mlp.activationfunction.ActivationFunction;
 import mlp.matrix.Matrix;
+import mlp.utils.Serializer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class NeuralNetwork implements Serializable {
 
     private final Random random = new Random();
 
+
     public NeuralNetwork(int[] layers, double learningRate, ActivationFunction activationFunction) {
         this.learningRate = learningRate;
         this.layers = layers;
@@ -35,7 +37,22 @@ public class NeuralNetwork implements Serializable {
         }
     }
 
-    public List<Double> predict(double[] X) {
+    /**
+     * load neural network from file
+     * @param file path to file
+     * @return neural network
+     */
+    public static NeuralNetwork load(String file) {
+        return (NeuralNetwork) Serializer.deserialize(file);
+    }
+
+
+    /**
+     * feed forward
+     * @param X input
+     * @return output of last layer
+     */
+    public double[] predict(double[] X) {
         Matrix input = Matrix.fromArray(X);
 
         for (int i = 0; i < weights.length; i++)
@@ -46,10 +63,14 @@ public class NeuralNetwork implements Serializable {
         return input.toArray();
     }
 
-    /*
-    * train in n epochs with stochastic gradient descent
-    * returns the loss in a double array
-    */
+
+    /**
+     * train in n epochs with stochastic gradient descent
+     * @param X array of input samples
+     * @param Y array of expected targets
+     * @param epochs number of epochs
+     * @return loss
+     */
     public double[] fit(double[][] X, double[][] Y, int epochs) {
         double[] loss = new double[epochs];
         for (int i = 0; i < epochs; i++) {
@@ -60,12 +81,19 @@ public class NeuralNetwork implements Serializable {
         return loss;
     }
 
-    /*
-    * train until loss is under specific loss for at least n epochs
-    */
-    public double[] fit(double[][] X, double[][] Y, double minLoss, int forAtLeastN) {
+    /**
+     * train until loss is under specific loss for at least n epochs (stochastic gradient descent)
+     * @param X array of input samples
+     * @param Y array of expected targets
+     * @param minLoss minimum loss to stop training
+     * @param forAtLeastN epochs
+     * @param maxEpochs maximum epochs (put -1 for infinite)
+     * @return loss
+     */
+    public double[] fit(double[][] X, double[][] Y, double minLoss, int forAtLeastN, int maxEpochs) {
         List<Double> loss = new ArrayList<>();
-        int epochsUnderMinLoss = 0;
+
+        int epochsUnderMinLoss = 0, epochs = 0;
         do {
             int sampleN = random.nextInt(X.length);
             double currentLoss = backprop(X[sampleN], Y[sampleN]);
@@ -76,7 +104,8 @@ public class NeuralNetwork implements Serializable {
             else
                 epochsUnderMinLoss = 0;
 
-        } while (epochsUnderMinLoss < forAtLeastN);
+            epochs++;
+        } while (epochsUnderMinLoss < forAtLeastN && (maxEpochs == -1 || epochs < maxEpochs));
 
         double[] lossArr = new double[loss.size()];
         for(int i = 0; i < loss.size(); i++)
@@ -85,9 +114,11 @@ public class NeuralNetwork implements Serializable {
         return lossArr;
     }
 
-    /*
+    /**
      * backpropagation
-     * returns the loss
+     * @param X array of input samples
+     * @param Y array of target class
+     * @return loss of the function
      */
     private double backprop(double[] X, double[] Y) {
         Matrix[] processing = new Matrix[layers.length];
@@ -125,6 +156,14 @@ public class NeuralNetwork implements Serializable {
         }
 
         return loss;
+    }
+
+    public void printNetwork() {
+        for (int i = 0; i < layers.length - 1; i++) {
+            System.out.println("Layer " + i);
+            System.out.println("Weights: " + weights[i]);
+            System.out.println("Biases: " + biases[i]);
+        }
     }
 }
 
