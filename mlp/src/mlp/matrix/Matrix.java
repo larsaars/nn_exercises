@@ -32,6 +32,12 @@ public class Matrix implements Serializable {
         data = Arrays.stream(matrix.data).map(double[]::clone).toArray(double[][]::new);
     }
 
+    public Matrix(double[][] data) {
+        this.rows = data.length;
+        this.cols = data[0].length;
+        this.data = data;
+    }
+
     public Matrix add(double scalar) {
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < cols; j++)

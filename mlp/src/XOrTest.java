@@ -17,7 +17,7 @@ public class XOrTest {
     };
 
     public static void main(String[] args) {
-        NeuralNetwork nn = new NeuralNetwork(new int[]{2, 16, 16, 1}, 0.01, ActivationFunctions.RELU);
+        NeuralNetwork nn = new NeuralNetwork(new int[]{2, 16, 16, 1}, 1e-3, ActivationFunctions.RELU);
 
         double[] loss = nn.fit(X, Y, 0.01, 20, 1000000);
         for (double[] d : X) {
