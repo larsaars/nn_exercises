@@ -1,4 +1,4 @@
-package activationfunction;
+package mlp.activationfunction;
 
 import java.io.Serializable;
 

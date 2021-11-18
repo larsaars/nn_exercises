@@ -1,4 +1,4 @@
-package activationfunction;
+package mlp.activationfunction;
 
 public class HyperbolicTangent implements ActivationFunction {
 

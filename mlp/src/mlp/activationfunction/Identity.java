@@ -1,6 +1,4 @@
-package activationfunction;
-
-import activationfunction.ActivationFunction;
+package mlp.activationfunction;
 
 public class Identity implements ActivationFunction {
 

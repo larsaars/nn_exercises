@@ -1,6 +1,10 @@
-import activationfunction.ActivationFunction;
+package mlp;
+
+import mlp.activationfunction.ActivationFunction;
+import mlp.matrix.Matrix;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -54,6 +58,31 @@ public class NeuralNetwork implements Serializable {
         }
 
         return loss;
+    }
+
+    /*
+    * train until loss is under specific loss for at least n epochs
+    */
+    public double[] fit(double[][] X, double[][] Y, double minLoss, int forAtLeastN) {
+        List<Double> loss = new ArrayList<>();
+        int epochsUnderMinLoss = 0;
+        do {
+            int sampleN = random.nextInt(X.length);
+            double currentLoss = backprop(X[sampleN], Y[sampleN]);
+            loss.add(currentLoss);
+
+            if (currentLoss <= minLoss)
+                epochsUnderMinLoss++;
+            else
+                epochsUnderMinLoss = 0;
+
+        } while (epochsUnderMinLoss < forAtLeastN);
+
+        double[] lossArr = new double[loss.size()];
+        for(int i = 0; i < loss.size(); i++)
+            lossArr[i] = loss.get(i);
+
+        return lossArr;
     }
 
     /*

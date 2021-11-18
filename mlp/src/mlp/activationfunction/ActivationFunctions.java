@@ -1,4 +1,4 @@
-package activationfunction;
+package mlp.activationfunction;
 
 public class ActivationFunctions {
     public static final ActivationFunction SIGMOID = new Sigmoid(),

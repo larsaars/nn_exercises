@@ -1,4 +1,6 @@
-import activationfunction.ActivationFunction;
+package mlp.matrix;
+
+import mlp.activationfunction.ActivationFunction;
 
 import java.io.Serializable;
 import java.util.*;
